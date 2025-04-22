@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyNotes</title> <!-- Changed title -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+</head>
+<style>
+    /* Removed the .text style as the heading is removed */
+    .navbar-item.ok { /* More specific selector */
+        font-size: 25px;
+        font-weight: bold;
+        font-family: 'Times New Roman', Times, serif;
+    }
+    .navbar-buttons .button { /* Style buttons in navbar */
+         font-weight:bold;
+         font-family:'Times New Roman', Times, serif;
+         margin-left: 10px; /* Add some space between buttons */
+    }
+</style>
+
+<body>
+    <nav class="navbar is-white has-shadow"> <!-- Added has-shadow for subtle depth -->
+        <div class="navbar-brand">
+            <a href="{% url 'editor' %}" class="navbar-item has-text-black ok">MyNotes</a> <!-- Changed App Name -->
+            <!-- Burger menu for mobile (optional but good practice) -->
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-end">
+                 <div class="navbar-item navbar-buttons"> <!-- Group buttons -->
+                    <a href="{% url 'editor' %}?docid=0" class="button is-primary">New Note</a>
+                    <a href="{% url 'logout' %}" class="button is-danger">Logout</a>
+                 </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Removed the <hr> -->
+
+    <section class="section">
+        <div class="columns">
+            <div class="column is-3"> <!-- Adjusted column size -->
+                <aside class="menu">
+                    <p class="menu-label" style="font-size: 20px; font-weight:bold; font-family:'Times New Roman', Times, serif">Your Notes</p> <!-- Changed label -->
+                    <ul class="menu-list">
+                        {% for doc in notes %}
+                            <li>
+                                <!-- Added is-active class dynamically -->
+                                <a href="{% url 'editor' %}?docid={{ doc.id }}" {% if doc.id == docid %} class="is-active" {% endif %}>{{ doc.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </aside>
+            </div>
+
+            <div class="column is-9"> <!-- Adjusted column size -->
+                <!-- Removed the GeeksforGeeks heading -->
+                <div class="box">
+                    <form method="post" action="{% url 'editor' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="docid" value="{{ docid }}">
+                        <div class="field">
+                            <label class="label" style="font-size: 22px; font-family:'Times New Roman', Times, serif">Title</label>
+                            <div class="control">
+                                <input type="text" class="input" name="title" placeholder="Note Title" {% if note %} value="{{ note.title }}"{% endif %}> <!-- Changed placeholder -->
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label" style="font-size: 20px; font-family:'Times New Roman', Times, serif">Content</label>
+                            <div class="control">
+                                <textarea class="textarea" name="content" placeholder="Write your note here...">{% if note %}{{ note.content }}{% endif %}</textarea> <!-- Changed placeholder -->
+                            </div>
+                        </div>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button class="button is-primary">Save Note</button> <!-- Changed button text -->
+                            </div>
+                            {% if note %}
+                                <div class="control">
+                                    <a href="{% url 'delete_note' note.id %}" class="button is-danger is-light">Delete</a> <!-- Added is-light -->
+                                </div>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Script for Bulma navbar burger -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+          if ($navbarBurgers.length > 0) {
+            $navbarBurgers.forEach( el => {
+              el.addEventListener('click', () => {
+                const target = el.dataset.target;
+                const $target = document.getElementById(target);
+                el.classList.toggle('is-active');
+                $target.classList.toggle('is-active');
+              });
+            });
+          }
+        });
+    </script>
+</body>
+</html>
