@@ -64,6 +64,10 @@ def delete_note(request, docid):
  
 # login page for user
 def login_page(request):
+    # If user is already authenticated, redirect to home page
+    if request.user.is_authenticated:
+        return redirect('editor')
+        
     if request.method == "POST":
         try:
             username = request.POST.get('username')
@@ -86,6 +90,10 @@ def login_page(request):
  
 # register page for user
 def register_page(request):
+    # If user is already authenticated, redirect to home page
+    if request.user.is_authenticated:
+        return redirect('editor')
+        
     if request.method == "POST":
         try:
             username = request.POST.get('username')
