@@ -12,47 +12,54 @@ from django.contrib.auth import logout
 @login_required(login_url='/login/')
 def editor(request):
     docid = int(request.GET.get('docid', 0))
-    notes = Note.objects.all()
- 
+    notes = Note.objects.filter(user=request.user)  # show only user's notes
+
     if request.method == 'POST':
         docid = int(request.POST.get('docid', 0))
         title = request.POST.get('title')
         content = request.POST.get('content', '')
- 
+
         if docid > 0:
-            note = Note.objects.get(pk=docid)
+            note = Note.objects.get(pk=docid, user=request.user)
             note.title = title
             note.content = content
             note.save()
- 
             return redirect('/?docid=%i' % docid)
         else:
-            note = Note.objects.create(title=title, content=content)
- 
+            note = Note.objects.create(
+                title=title, content=content, user=request.user
+            )
             return redirect('/?docid=%i' % note.id)
- 
+
     if docid > 0:
-        note = Note.objects.get(pk=docid)
+        try:
+            note = Note.objects.get(pk=docid, user=request.user)
+        except Note.DoesNotExist:
+            note = ''
     else:
         note = ''
- 
+
     context = {
         'docid': docid,
         'notes': notes,
         'note': note
     }
- 
+
     return render(request, 'editor.html', context)
+
  
 # create delete notes page
  
  
 @login_required(login_url='/login/')
 def delete_note(request, docid):
-    note = Note.objects.get(pk=docid)
-    note.delete()
- 
+    try:
+        note = Note.objects.get(pk=docid, user=request.user)
+        note.delete()
+    except Note.DoesNotExist:
+        pass
     return redirect('/?docid=0')
+
  
  
 # login page for user
