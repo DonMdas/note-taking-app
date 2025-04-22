@@ -107,6 +107,8 @@
         height: calc(100vh - 180px);
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
+        max-height: calc(100vh - 180px);
     }
     
     .field .label {
@@ -193,6 +195,31 @@
             margin-bottom: 1.5rem;
         }
     }
+    
+    /* Styles for the summary section */
+    .summary-section {
+        margin-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 1.5rem;
+    }
+    
+    #summary-textarea {
+        background-color: rgba(93, 105, 190, 0.05);
+        min-height: 120px;
+    }
+    
+    .button.is-info {
+        background: linear-gradient(135deg, #38b2ac, #4299e1);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .button.is-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+    }
 </style>
 
 <body>
@@ -250,6 +277,7 @@
                     <form method="post" action="{% url 'editor' %}" class="h-100 d-flex flex-column">
                         {% csrf_token %}
                         <input type="hidden" name="docid" value="{{ docid }}">
+                        <input type="hidden" name="summary" id="summary-input" value="{% if note.summary %}{{ note.summary }}{% endif %}">
                         <div class="field">
                             <label class="label"><i class="fas fa-heading mr-2"></i> Title</label>
                             <div class="control">
@@ -262,10 +290,21 @@
                                 <textarea class="textarea" name="content" placeholder="Write your thoughts here...">{% if note %}{{ note.content }}{% endif %}</textarea>
                             </div>
                         </div>
+                        <div class="summary-section" id="summary-section" {% if not note.summary %}style="display: none;"{% endif %}>
+                            <label class="label"><i class="fas fa-list-alt mr-2"></i> Key Points</label>
+                            <div class="control">
+                                <textarea class="textarea" id="summary-textarea" name="summary" placeholder="Key points from your note will appear here...">{% if note.summary %}{{ note.summary }}{% endif %}</textarea>
+                            </div>
+                        </div>
                         <div class="field is-grouped mt-4">
                             <div class="control">
-                                <button class="button is-primary">
+                                <button type="submit" class="button is-primary">
                                     <i class="fas fa-save mr-2"></i> Save Note
+                                </button>
+                            </div>
+                            <div class="control">
+                                <button type="button" id="summarize-btn" class="button is-info">
+                                    <i class="fas fa-magic mr-2"></i> Summarize
                                 </button>
                             </div>
                             {% if note %}
@@ -306,6 +345,65 @@
                     this.style.height = (this.scrollHeight) + 'px';
                 });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const summarizeBtn = document.getElementById('summarize-btn');
+            const contentTextarea = document.querySelector('textarea[name="content"]');
+            const summaryTextarea = document.getElementById('summary-textarea');
+            const summaryInput = document.getElementById('summary-input');
+            const summarySection = document.getElementById('summary-section');
+            
+            // Handle summarize button click
+            summarizeBtn.addEventListener('click', function() {
+                const content = contentTextarea.value.trim();
+                
+                if (!content) {
+                    alert('Please add some content to summarize.');
+                    return;
+                }
+                
+                // Show loading state
+                summarizeBtn.classList.add('is-loading');
+                summarizeBtn.disabled = true;
+                
+                // Create form data for the request
+                const formData = new FormData();
+                formData.append('content', content);
+                formData.append('docid', '{{ docid }}');
+                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                
+                // Send request to the backend
+                fetch('{% url "summarize_note" %}', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Update the summary textarea and show the section
+                    if (data.summary) {
+                        summaryTextarea.value = data.summary;
+                        summaryInput.value = data.summary;
+                        summarySection.style.display = 'block';
+                    } else if (data.error) {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while summarizing the note.');
+                })
+                .finally(() => {
+                    // Reset button state
+                    summarizeBtn.classList.remove('is-loading');
+                    summarizeBtn.disabled = false;
+                });
+            });
+            
+            // Ensure the summary input stays in sync with textarea
+            summaryTextarea.addEventListener('input', function() {
+                summaryInput.value = summaryTextarea.value;
+            });
         });
     </script>
 </body>

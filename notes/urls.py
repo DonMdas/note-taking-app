@@ -25,5 +25,6 @@ urlpatterns = [
     path('custom_logout/' ,custom_logout, name='logout'),
     path('', editor, name='editor'),
     path('delete_note/<int:docid>/', delete_note, name='delete_note'),
+    path('summarize/', summarize_note, name='summarize_note'),  # New endpoint
     path('admin/', admin.site.urls),
 ]

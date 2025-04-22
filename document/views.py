@@ -6,6 +6,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
+from .gemini_utils import generate_summary
  
  
 # create editor page
@@ -18,16 +19,18 @@ def editor(request):
         docid = int(request.POST.get('docid', 0))
         title = request.POST.get('title')
         content = request.POST.get('content', '')
+        summary = request.POST.get('summary', '')  # Get summary from form
 
         if docid > 0:
             note = Note.objects.get(pk=docid, user=request.user)
             note.title = title
             note.content = content
+            note.summary = summary  # Save the summary
             note.save()
             return redirect('/?docid=%i' % docid)
         else:
             note = Note.objects.create(
-                title=title, content=content, user=request.user
+                title=title, content=content, summary=summary, user=request.user
             )
             return redirect('/?docid=%i' % note.id)
 
@@ -117,3 +120,31 @@ def register_page(request):
 def custom_logout(request):
     logout(request)
     return redirect('login')
+
+# Add this new view
+@login_required(login_url='/login/')
+def summarize_note(request):
+    """API endpoint to summarize note content"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+    
+    try:
+        content = request.POST.get('content', '')
+        docid = request.POST.get('docid', 0)
+        
+        # Generate summary
+        summary = generate_summary(content)
+        
+        # If docid is provided, save the summary to the note
+        if int(docid) > 0:
+            try:
+                note = Note.objects.get(pk=int(docid), user=request.user)
+                note.summary = summary
+                note.save()
+            except Note.DoesNotExist:
+                pass
+        
+        return JsonResponse({'summary': summary})
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
