@@ -3,86 +3,276 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>MyNotes</title> <!-- Changed title -->
+    <title>MyNotes</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <style>
-    /* Removed the .text style as the heading is removed */
-    .navbar-item.ok { /* More specific selector */
-        font-size: 25px;
-        font-weight: bold;
-        font-family: 'Times New Roman', Times, serif;
+    :root {
+        --primary-color: #5D69BE;
+        --secondary-color: #56CCF2;
+        --accent-color: #FF6B6B;
+        --text-color: #2D3748;
+        --light-color: #F8FAFC;
+        --sidebar-width: 280px;
     }
-    .navbar-buttons .button { /* Style buttons in navbar */
-         font-weight:bold;
-         font-family:'Times New Roman', Times, serif;
-         margin-left: 10px; /* Add some space between buttons */
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f5f7fa;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .navbar {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background: #fff;
+    }
+    
+    .navbar-brand a.navbar-item {
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: var(--primary-color);
+    }
+    
+    .navbar-item .button {
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-item .button.is-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+    }
+    
+    .navbar-item .button.is-danger {
+        background-color: var(--accent-color);
+        border: none;
+    }
+    
+    .navbar-item .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .section {
+        flex: 1;
+        padding: 2rem 1.5rem;
+    }
+    
+    .menu {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        padding: 1.5rem;
+        height: calc(100vh - 180px);
+        overflow-y: auto;
+    }
+    
+    .menu-label {
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+    }
+    
+    .menu-list a {
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        padding: 0.7rem 1rem;
+        transition: all 0.2s ease;
+        color: var(--text-color);
+    }
+    
+    .menu-list a:hover {
+        background-color: rgba(93, 105, 190, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .menu-list a.is-active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .box {
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        height: calc(100vh - 180px);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .field .label {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+    
+    .input, .textarea {
+        border-radius: 8px;
+        border-color: #e2e8f0;
+        box-shadow: none;
+        transition: all 0.3s ease;
+    }
+    
+    .input:focus, .textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(93, 105, 190, 0.2);
+    }
+    
+    .textarea {
+        flex-grow: 1;
+        min-height: 200px;
+        resize: none;
+    }
+    
+    .button.is-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .button.is-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(93, 105, 190, 0.4);
+    }
+    
+    .button.is-danger {
+        background-color: var(--accent-color);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .is-danger.is-light {
+        background-color: rgba(255, 107, 107, 0.1);
+        color: var(--accent-color);
+    }
+    
+    .is-danger.is-light:hover {
+        background-color: rgba(255, 107, 107, 0.2);
+        transform: translateY(-2px);
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #c5cae9;
+        border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+    }
+    
+    /* Responsive adjustments */
+    @media screen and (max-width: 768px) {
+        .section {
+            padding: 1rem;
+        }
+        
+        .box, .menu {
+            height: auto;
+            margin-bottom: 1.5rem;
+        }
     }
 </style>
 
 <body>
-    <nav class="navbar is-white has-shadow"> <!-- Added has-shadow for subtle depth -->
+    <nav class="navbar" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a href="{% url 'editor' %}" class="navbar-item has-text-black ok">MyNotes</a> <!-- Changed App Name -->
-            <!-- Burger menu for mobile (optional but good practice) -->
+            <a href="{% url 'editor' %}" class="navbar-item">
+                <i class="fas fa-book-open mr-2"></i> MyNotes
+            </a>
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
             </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-end">
-                 <div class="navbar-item navbar-buttons"> <!-- Group buttons -->
-                    <a href="{% url 'editor' %}?docid=0" class="button is-primary">New Note</a>
-                    <a href="{% url 'logout' %}" class="button is-danger">Logout</a>
-                 </div>
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a href="{% url 'editor' %}?docid=0" class="button is-primary">
+                            <i class="fas fa-plus mr-2"></i> New Note
+                        </a>
+                        <a href="{% url 'logout' %}" class="button is-danger">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
-    <!-- Removed the <hr> -->
 
     <section class="section">
         <div class="columns">
-            <div class="column is-3"> <!-- Adjusted column size -->
+            <div class="column is-3">
                 <aside class="menu">
-                    <p class="menu-label" style="font-size: 20px; font-weight:bold; font-family:'Times New Roman', Times, serif">Your Notes</p> <!-- Changed label -->
+                    <p class="menu-label">
+                        <i class="fas fa-list-ul mr-2"></i> Your Notes
+                    </p>
                     <ul class="menu-list">
                         {% for doc in notes %}
                             <li>
-                                <!-- Added is-active class dynamically -->
-                                <a href="{% url 'editor' %}?docid={{ doc.id }}" {% if doc.id == docid %} class="is-active" {% endif %}>{{ doc.title }}</a>
+                                <a href="{% url 'editor' %}?docid={{ doc.id }}" {% if doc.id == docid %} class="is-active" {% endif %}>
+                                    {{ doc.title }}
+                                </a>
                             </li>
                         {% endfor %}
+                        {% if not notes %}
+                            <li><p class="has-text-grey py-2 px-4">No notes yet. Create your first note!</p></li>
+                        {% endif %}
                     </ul>
                 </aside>
             </div>
 
-            <div class="column is-9"> <!-- Adjusted column size -->
-                <!-- Removed the GeeksforGeeks heading -->
+            <div class="column is-9">
                 <div class="box">
-                    <form method="post" action="{% url 'editor' %}">
+                    <form method="post" action="{% url 'editor' %}" class="h-100 d-flex flex-column">
                         {% csrf_token %}
                         <input type="hidden" name="docid" value="{{ docid }}">
                         <div class="field">
-                            <label class="label" style="font-size: 22px; font-family:'Times New Roman', Times, serif">Title</label>
+                            <label class="label"><i class="fas fa-heading mr-2"></i> Title</label>
                             <div class="control">
-                                <input type="text" class="input" name="title" placeholder="Note Title" {% if note %} value="{{ note.title }}"{% endif %}> <!-- Changed placeholder -->
+                                <input type="text" class="input" name="title" placeholder="Enter note title..." {% if note %} value="{{ note.title }}"{% endif %} required>
                             </div>
                         </div>
-                        <div class="field">
-                            <label class="label" style="font-size: 20px; font-family:'Times New Roman', Times, serif">Content</label>
-                            <div class="control">
-                                <textarea class="textarea" name="content" placeholder="Write your note here...">{% if note %}{{ note.content }}{% endif %}</textarea> <!-- Changed placeholder -->
+                        <div class="field flex-grow-1 d-flex flex-column">
+                            <label class="label"><i class="fas fa-align-left mr-2"></i> Content</label>
+                            <div class="control flex-grow-1">
+                                <textarea class="textarea" name="content" placeholder="Write your thoughts here...">{% if note %}{{ note.content }}{% endif %}</textarea>
                             </div>
                         </div>
-                        <div class="field is-grouped">
+                        <div class="field is-grouped mt-4">
                             <div class="control">
-                                <button class="button is-primary">Save Note</button> <!-- Changed button text -->
+                                <button class="button is-primary">
+                                    <i class="fas fa-save mr-2"></i> Save Note
+                                </button>
                             </div>
                             {% if note %}
                                 <div class="control">
-                                    <a href="{% url 'delete_note' note.id %}" class="button is-danger is-light">Delete</a> <!-- Added is-light -->
+                                    <a href="{% url 'delete_note' note.id %}" class="button is-danger is-light" onclick="return confirm('Are you sure you want to delete this note?')">
+                                        <i class="fas fa-trash mr-2"></i> Delete
+                                    </a>
                                 </div>
                             {% endif %}
                         </div>
@@ -91,20 +281,31 @@
             </div>
         </div>
     </section>
+
     <!-- Script for Bulma navbar burger -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-          const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-          if ($navbarBurgers.length > 0) {
-            $navbarBurgers.forEach( el => {
-              el.addEventListener('click', () => {
-                const target = el.dataset.target;
-                const $target = document.getElementById(target);
-                el.classList.toggle('is-active');
-                $target.classList.toggle('is-active');
-              });
-            });
-          }
+            // Navbar burger toggle
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+            
+            // Auto-resize textarea
+            const textarea = document.querySelector('textarea');
+            if (textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            }
         });
     </script>
 </body>
