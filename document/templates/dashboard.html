@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyNotes - Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<style>
+    :root {
+        --primary-color: #5D69BE;
+        --secondary-color: #56CCF2;
+        --accent-color: #FF6B6B;
+        --text-color: #2D3748;
+        --light-color: #F8FAFC;
+        --sidebar-width: 280px;
+    }
+    
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f5f7fa;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Navbar styles */
+    .navbar {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        background: #fff;
+    }
+    
+    .navbar-brand a.navbar-item {
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: var(--primary-color);
+    }
+    
+    .navbar-item .button {
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .navbar-item .button.is-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+    }
+    
+    .navbar-item .button.is-danger {
+        background-color: var(--accent-color);
+        border: none;
+    }
+    
+    .navbar-item .button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Hero section */
+    .hero {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        margin-bottom: 2rem;
+    }
+    
+    .hero-body {
+        padding: 3rem 1.5rem;
+    }
+    
+    .hero-title {
+        color: white;
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 400;
+        margin-top: 0.5rem;
+    }
+    
+    /* Dashboard stats */
+    .dashboard-stats {
+        margin-bottom: 2.5rem;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: var(--text-color);
+        font-weight: 500;
+        opacity: 0.8;
+    }
+    
+    .stat-icon {
+        float: right;
+        font-size: 2.5rem;
+        opacity: 0.2;
+        color: var(--primary-color);
+    }
+    
+    /* Note cards */
+    .note-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .note-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    .note-card-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .note-card-title {
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .note-card-excerpt {
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        flex-grow: 1;
+    }
+    
+    .note-card-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .note-card-date {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        opacity: 0.6;
+    }
+    
+    .empty-state {
+        background: white;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        opacity: 0.3;
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-description {
+        color: var(--text-color);
+        opacity: 0.7;
+        margin-bottom: 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .create-note-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--primary-color);
+        color: white;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 20px rgba(93, 105, 190, 0.4);
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    
+    .create-note-btn:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 6px 25px rgba(93, 105, 190, 0.5);
+        color: white;
+    }
+    
+    /* Responsive adjustments */
+    @media screen and (max-width: 768px) {
+        .hero-body {
+            padding: 2rem 1rem;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+        }
+        
+        .dashboard-stats {
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a href="{% url 'dashboard' %}" class="navbar-item">
+                <i class="fas fa-book-open mr-2"></i> MyNotes
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a href="{% url 'editor' %}?docid=0" class="button is-primary">
+                            <i class="fas fa-plus mr-2"></i> New Note
+                        </a>
+                        <a href="{% url 'logout' %}" class="button is-danger">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="hero-title">Welcome back, {{ request.user.username }}!</h1>
+                <p class="hero-subtitle">Here are your notes and key insights</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Dashboard stats -->
+        <div class="dashboard-stats">
+            <div class="columns">
+                <div class="column is-4">
+                    <div class="stat-card">
+                        <i class="fas fa-sticky-note stat-icon"></i>
+                        <div class="stat-value">{{ notes.count }}</div>
+                        <div class="stat-label">Total Notes</div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="stat-card">
+                        <i class="fas fa-calendar-alt stat-icon"></i>
+                        <div class="stat-value">{{ recent_note_count }}</div>
+                        <div class="stat-label">Created This Week</div>
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div class="stat-card">
+                        <i class="fas fa-pencil-alt stat-icon"></i>
+                        <div class="stat-value">{{ recently_edited_count }}</div>
+                        <div class="stat-label">Recently Edited</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Note cards -->
+        <h3 class="title is-4 mb-4"><i class="fas fa-bookmark mr-2"></i> Your Notes</h3>
+        
+        {% if notes %}
+            <div class="columns is-multiline">
+                {% for note in notes %}
+                    <div class="column is-4">
+                        <div class="note-card">
+                            <div class="note-card-content">
+                                <h3 class="note-card-title">{{ note.title }}</h3>
+                                <p class="note-card-excerpt">
+                                    {% if note.summary %}
+                                        {{ note.summary|truncatechars:150 }}
+                                    {% else %}
+                                        {{ note.content|truncatechars:150 }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="note-card-footer">
+                                <span class="note-card-date">
+                                    Last modified: {{ note.modified_at|date:"M d, Y" }}
+                                </span>
+                                <a href="{% url 'editor' %}?docid={{ note.id }}" class="button is-small is-primary is-light">
+                                    <i class="fas fa-edit mr-1"></i> Edit
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-file-alt empty-icon"></i>
+                <h2 class="empty-title">No notes yet</h2>
+                <p class="empty-description">
+                    You haven't created any notes yet. Click the button below to create your first note.
+                </p>
+                <a href="{% url 'editor' %}?docid=0" class="button is-primary is-medium">
+                    <i class="fas fa-plus mr-2"></i> Create Your First Note
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'editor' %}?docid=0" class="create-note-btn" title="Create New Note">
+        <i class="fas fa-plus"></i>
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Navbar burger toggle
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            if ($navbarBurgers.length > 0) {
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

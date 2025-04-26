@@ -7,8 +7,33 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from .gemini_utils import generate_summary
+from datetime import datetime, timedelta
+
  
- 
+
+# create dashboard page
+@login_required(login_url='/login/')
+def dashboard(request):
+    # Get all notes for the current user
+    notes = Note.objects.filter(user=request.user)
+    
+    # Get count of notes created in the last 7 days
+    one_week_ago = datetime.now() - timedelta(days=7)
+    recent_note_count = Note.objects.filter(user=request.user, created_at__gte=one_week_ago).count()
+    
+    # Get count of notes edited in the last 3 days
+    three_days_ago = datetime.now() - timedelta(days=3)
+    recently_edited_count = Note.objects.filter(user=request.user, modified_at__gte=three_days_ago).count()
+    
+    context = {
+        'notes': notes,
+        'recent_note_count': recent_note_count,
+        'recently_edited_count': recently_edited_count
+    }
+    
+    return render(request, 'dashboard.html', context)
+
+
 # create editor page
 @login_required(login_url='/login/')
 def editor(request):
@@ -67,9 +92,9 @@ def delete_note(request, docid):
  
 # login page for user
 def login_page(request):
-    # If user is already authenticated, redirect to home page
+    # If user is already authenticated, redirect to dashboard page
     if request.user.is_authenticated:
-        return redirect('editor')
+        return redirect('dashboard')
         
     if request.method == "POST":
         try:
@@ -82,7 +107,7 @@ def login_page(request):
             user_obj = authenticate(username=username, password=password)
             if user_obj:
                 login(request, user_obj)
-                return redirect('editor')
+                return redirect('dashboard')  # Changed to redirect to dashboard
             messages.error(request, "Wrong Password")
             return redirect('/login/')
         except Exception as e:
@@ -93,9 +118,9 @@ def login_page(request):
  
 # register page for user
 def register_page(request):
-    # If user is already authenticated, redirect to home page
+    # If user is already authenticated, redirect to dashboard page
     if request.user.is_authenticated:
-        return redirect('editor')
+        return redirect('dashboard')
         
     if request.method == "POST":
         try:
