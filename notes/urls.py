@@ -23,8 +23,8 @@ urlpatterns = [
     path('login/' , login_page, name='login'),
     path('register/', register_page, name='register'),
     path('custom_logout/' ,custom_logout, name='logout'),
-    path('', dashboard, name='dashboard'),  # Changed default route to dashboard
-    path('editor/', editor, name='editor'),  # Editor is now a separate route
+    path('', dashboard, name='dashboard'),  
+    path('editor/', editor, name='editor'),  
     path('delete_note/<int:docid>/', delete_note, name='delete_note'),
     path('summarize/', summarize_note, name='summarize_note'),
     path('admin/', admin.site.urls),
