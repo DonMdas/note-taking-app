@@ -28,6 +28,7 @@
         flex-direction: column;
     }
     
+    /* Navbar styles */
     .navbar {
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         background: #fff;
@@ -60,6 +61,7 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     
+    /* Section and menu styles */
     .section {
         flex: 1;
         padding: 2rem 1.5rem;
@@ -100,20 +102,33 @@
         color: white;
     }
     
+    /* Box and form container */
     .box {
         border-radius: 12px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
         padding: 2rem;
         height: calc(100vh - 180px);
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
-        max-height: calc(100vh - 180px);
+    }
+    
+    form {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    /* Fields and inputs */
+    .field {
+        margin-bottom: 1.5rem;
     }
     
     .field .label {
         color: var(--primary-color);
         font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
     }
     
     .input, .textarea {
@@ -121,6 +136,7 @@
         border-color: #e2e8f0;
         box-shadow: none;
         transition: all 0.3s ease;
+        width: 100%;
     }
     
     .input:focus, .textarea:focus {
@@ -128,12 +144,40 @@
         box-shadow: 0 0 0 2px rgba(93, 105, 190, 0.2);
     }
     
-    .textarea {
-        flex-grow: 1;
-        min-height: 200px;
+    /* Content textarea */
+    #content-textarea {
+        height: 250px;
         resize: none;
+        overflow-y: auto;
+        background-color: white;
+        margin-bottom: 0;
     }
     
+    /* Summary section */
+    .summary-section {
+        border-top: 2px solid #e2e8f0;
+        padding-top: 1.8rem;
+        margin-top: 1.8rem;
+        margin-bottom: 1.8rem;
+    }
+    
+    #summary-textarea {
+        height: 220px; /* Increased from 150px to 220px */
+        resize: none;
+        overflow-y: auto;
+        background-color: rgba(93, 105, 190, 0.05);
+        margin-bottom: 0;
+        border-width: 2px; /* Slightly thicker border for emphasis */
+    }
+    
+    /* Enhance the summary section label */
+    .summary-section .label {
+        font-size: 1.1rem;
+        color: var(--primary-color);
+        margin-bottom: 0.8rem;
+    }
+    
+    /* Buttons */
     .button.is-primary {
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         border: none;
@@ -145,6 +189,19 @@
     .button.is-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(93, 105, 190, 0.4);
+    }
+    
+    .button.is-info {
+        background: linear-gradient(135deg, #38b2ac, #4299e1);
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .button.is-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
     }
     
     .button.is-danger {
@@ -194,31 +251,10 @@
             height: auto;
             margin-bottom: 1.5rem;
         }
-    }
-    
-    /* Styles for the summary section */
-    .summary-section {
-        margin-top: 2rem;
-        border-top: 1px solid #e2e8f0;
-        padding-top: 1.5rem;
-    }
-    
-    #summary-textarea {
-        background-color: rgba(93, 105, 190, 0.05);
-        min-height: 120px;
-    }
-    
-    .button.is-info {
-        background: linear-gradient(135deg, #38b2ac, #4299e1);
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .button.is-info:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+        
+        #content-textarea, #summary-textarea {
+            height: 200px;
+        }
     }
 </style>
 
@@ -284,10 +320,10 @@
                                 <input type="text" class="input" name="title" placeholder="Enter note title..." {% if note %} value="{{ note.title }}"{% endif %} required>
                             </div>
                         </div>
-                        <div class="field flex-grow-1 d-flex flex-column">
+                        <div class="field content-field">
                             <label class="label"><i class="fas fa-align-left mr-2"></i> Content</label>
-                            <div class="control flex-grow-1">
-                                <textarea class="textarea" name="content" placeholder="Write your thoughts here...">{% if note %}{{ note.content }}{% endif %}</textarea>
+                            <div class="control">
+                                <textarea class="textarea" id="content-textarea" name="content" placeholder="Write your thoughts here...">{% if note %}{{ note.content }}{% endif %}</textarea>
                             </div>
                         </div>
                         <div class="summary-section" id="summary-section" {% if not note.summary %}style="display: none;"{% endif %}>
@@ -321,11 +357,17 @@
         </div>
     </section>
 
-    <!-- Script for Bulma navbar burger -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Navbar burger toggle
+            // Elements
             const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+            const contentTextarea = document.getElementById('content-textarea');
+            const summaryTextarea = document.getElementById('summary-textarea');
+            const summarizeBtn = document.getElementById('summarize-btn');
+            const summaryInput = document.getElementById('summary-input');
+            const summarySection = document.getElementById('summary-section');
+            
+            // Navbar burger toggle
             if ($navbarBurgers.length > 0) {
                 $navbarBurgers.forEach(el => {
                     el.addEventListener('click', () => {
@@ -337,73 +379,60 @@
                 });
             }
             
-            // Auto-resize textarea
-            const textarea = document.querySelector('textarea');
-            if (textarea) {
-                textarea.addEventListener('input', function() {
-                    this.style.height = 'auto';
-                    this.style.height = (this.scrollHeight) + 'px';
+            // Keep summary input in sync with textarea
+            if (summaryTextarea) {
+                summaryTextarea.addEventListener('input', function() {
+                    summaryInput.value = this.value;
                 });
             }
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const summarizeBtn = document.getElementById('summarize-btn');
-            const contentTextarea = document.querySelector('textarea[name="content"]');
-            const summaryTextarea = document.getElementById('summary-textarea');
-            const summaryInput = document.getElementById('summary-input');
-            const summarySection = document.getElementById('summary-section');
             
-            // Handle summarize button click
-            summarizeBtn.addEventListener('click', function() {
-                const content = contentTextarea.value.trim();
-                
-                if (!content) {
-                    alert('Please add some content to summarize.');
-                    return;
-                }
-                
-                // Show loading state
-                summarizeBtn.classList.add('is-loading');
-                summarizeBtn.disabled = true;
-                
-                // Create form data for the request
-                const formData = new FormData();
-                formData.append('content', content);
-                formData.append('docid', '{{ docid }}');
-                formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-                
-                // Send request to the backend
-                fetch('{% url "summarize_note" %}', {
-                    method: 'POST',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Update the summary textarea and show the section
-                    if (data.summary) {
-                        summaryTextarea.value = data.summary;
-                        summaryInput.value = data.summary;
-                        summarySection.style.display = 'block';
-                    } else if (data.error) {
-                        alert('Error: ' + data.error);
+            // Summarize button functionality
+            if (summarizeBtn) {
+                summarizeBtn.addEventListener('click', function() {
+                    const content = contentTextarea.value.trim();
+                    
+                    if (!content) {
+                        alert('Please add some content to summarize.');
+                        return;
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while summarizing the note.');
-                })
-                .finally(() => {
-                    // Reset button state
-                    summarizeBtn.classList.remove('is-loading');
-                    summarizeBtn.disabled = false;
+                    
+                    // Show loading state
+                    summarizeBtn.classList.add('is-loading');
+                    summarizeBtn.disabled = true;
+                    
+                    // Create form data for the request
+                    const formData = new FormData();
+                    formData.append('content', content);
+                    formData.append('docid', '{{ docid }}');
+                    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+                    
+                    // Send request to the backend
+                    fetch('{% url "summarize_note" %}', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update the summary textarea and show the section
+                        if (data.summary) {
+                            summaryTextarea.value = data.summary;
+                            summaryInput.value = data.summary;
+                            summarySection.style.display = 'block';
+                        } else if (data.error) {
+                            alert('Error: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while summarizing the note.');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        summarizeBtn.classList.remove('is-loading');
+                        summarizeBtn.disabled = false;
+                    });
                 });
-            });
-            
-            // Ensure the summary input stays in sync with textarea
-            summaryTextarea.addEventListener('input', function() {
-                summaryInput.value = summaryTextarea.value;
-            });
+            }
         });
     </script>
 </body>
