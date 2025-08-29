@@ -1,6 +1,6 @@
 # MyNotes - Django Note-Taking Web Application
 
-MyNotes is a web-based application built with Django that allows users to securely create, manage, and summarize their personal notes. It features user authentication, a dashboard overview, a note editor, and integration with Google's Gemini API for AI-powered summarization.
+MyNotes is a web-based application, created by Don and Abhin, built with Django that allows users to securely create, manage, and summarize their personal notes. It features user authentication, a dashboard overview, a note editor, and integration with Google's Gemini API for AI-powered summarization.
 
 ## Features
 
